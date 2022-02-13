@@ -1,0 +1,37 @@
+_pkgname=xfwm4
+pkgname=${_pkgname}-patched
+pkgver=4.16.1
+pkgrel=2
+pkgdesc="Xfce's window manager"
+arch=('x86_64')
+url="https://docs.xfce.org/xfce/xfwm4/start"
+license=('GPL2')
+groups=('xfce4')
+provides=($_pkgname)
+conflicts=($_pkgname)
+depends=('libxfce4ui' 'xfconf' 'libwnck3' 'libepoxy' 'libxpresent'
+         'hicolor-icon-theme')
+makedepends=('git' 'xfce4-dev-tools' 'intltool')
+source=(git://github.com/andregoetz/$_pkgname#branch=$_pkgname-$pkgver-patched)
+sha256sums=('SKIP')
+
+build() {
+  cd "$srcdir/$_pkgname"
+  ./autogen.sh \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --libexecdir=/usr/lib \
+    --localstatedir=/var \
+    --disable-static \
+    --enable-startup-notification \
+    --enable-randr \
+    --enable-compositor \
+    --enable-xsync \
+    --disable-debug
+  make
+}
+
+package() {
+  cd "$srcdir/$_pkgname"
+  make DESTDIR="$pkgdir" install
+}
