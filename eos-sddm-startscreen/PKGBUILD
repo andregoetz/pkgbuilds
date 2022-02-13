@@ -1,0 +1,28 @@
+pkgname=eos-sddm-startscreen
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Animated SDDM-Theme and Splashscreen (KDE) for EndeavourOS"
+arch=('any')
+url="https://github.com/andregoetz/eos-sddm-startscreen"
+license=('GPL3')
+makedepends=()
+depends=('qt5-multimedia>=5.12.1' 'qt5-quickcontrols>=5.12.1')
+source=(git://github.com/andregoetz/$pkgname)
+sha256sums=('SKIP')
+
+build() {
+  export LD_PRELOAD='/usr/lib/libfakeroot/libfakeroot.so'
+  cd "$srcdir/$pkgname"
+  make
+}
+
+check() {
+  cd "$srcdir/$pkgname"
+  make -k check
+}
+
+package() {
+  export LD_PRELOAD='/usr/lib/libfakeroot/libfakeroot.so'
+  cd "$srcdir/$pkgname"
+  make DESTDIR="$pkgdir" install
+}
