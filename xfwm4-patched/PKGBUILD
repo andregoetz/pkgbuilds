@@ -1,7 +1,7 @@
 _pkgname=xfwm4
 pkgname=${_pkgname}-patched
 pkgver=4.16.1
-pkgrel=3
+pkgrel=4
 pkgdesc="Xfce's window manager"
 arch=('x86_64')
 url="https://docs.xfce.org/xfce/xfwm4/start"
