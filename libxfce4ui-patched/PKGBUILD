@@ -1,7 +1,7 @@
 _pkgname=libxfce4ui
 pkgname=${_pkgname}-patched
 pkgver=4.16.1
-pkgrel=2
+pkgrel=1
 pkgdesc="Commonly used Xfce widgets among Xfce applications"
 arch=('x86_64')
 url="https://www.xfce.org/"
@@ -11,23 +11,32 @@ provides=($_pkgname)
 conflicts=($_pkgname)
 depends=('libxfce4util' 'gtk3' 'xfconf' 'libsm' 'startup-notification'
          'libgtop' 'libepoxy' 'hicolor-icon-theme')
-makedepends=('git' 'xfce4-dev-tools' 'intltool' 'gobject-introspection' 'vala')
-source=(git://github.com/andregoetz/$_pkgname#branch=$_pkgname-$pkgver-patched)
-sha256sums=('SKIP')
+makedepends=('intltool' 'gobject-introspection' 'vala')
+source=(https://archive.xfce.org/src/xfce/$_pkgname/${pkgver%.*}/$_pkgname-$pkgver.tar.bz2
+        libxfce4ui-4.16.1-window_cycle_keep_open.patch)
+sha256sums=('d96946ae5af6bf078dda415419e0021909f763ee0020b42f3e26f603e51585f6'
+            '09b82a7e202404c74b3dc26643218226270a6c10df69c024250f407dcf1e2cef')
+
+prepare() {
+  cd "$srcdir/$_pkgname-$pkgver"
+  patch -Np1 -i ../libxfce4ui-4.16.1-window_cycle_keep_open.patch
+}
 
 build() {
-  cd "$srcdir/$_pkgname"
-  ./autogen.sh \
+  cd "$srcdir/$_pkgname-$pkgver"
+
+  ./configure \
     --prefix=/usr \
     --sysconfdir=/etc \
     --libexecdir=/usr/lib \
     --localstatedir=/var \
     --disable-static \
-    --disable-debug
+    --disable-debug \
+    --with-vendor-info='Arch Linux'
   make
 }
 
 package() {
-  cd "$srcdir/$_pkgname"
+  cd "$srcdir/$_pkgname-$pkgver"
   make DESTDIR="$pkgdir" install
 }
