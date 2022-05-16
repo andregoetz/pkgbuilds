@@ -1,7 +1,7 @@
 _pkgname=xfwm4
 pkgname=${_pkgname}-patched
 pkgver=4.16.1
-pkgrel=6
+pkgrel=1
 pkgdesc="Xfce's window manager"
 arch=('x86_64')
 url="https://docs.xfce.org/xfce/xfwm4/start"
@@ -11,13 +11,37 @@ provides=($_pkgname)
 conflicts=($_pkgname)
 depends=('libxfce4ui' 'xfconf' 'libwnck3' 'libepoxy' 'libxpresent'
          'hicolor-icon-theme')
-makedepends=('git' 'xfce4-dev-tools' 'intltool')
-source=(git://github.com/andregoetz/$_pkgname#branch=$_pkgname-$pkgver-patched)
-sha256sums=('SKIP')
+makedepends=('intltool')
+source=(https://archive.xfce.org/src/xfce/$_pkgname/${pkgver%.*}/$_pkgname-$pkgver.tar.bz2
+        client-Handle-removal-of-GTK_FRAME_EXTENTS.patch
+        xfwm4-4.16-keep_panel_hidden_on_fullscreen.patch
+        xfwm4-4.16.1-no_raise_on_scroll.patch
+        # xfwm4-4.16.1-window_cycle_keep_open.patch
+        xfwm4-4.16.1-close_window_from_tabwin.patch
+        xfwm4-4.16-fix_crash_when_clicking_outside_window_list.patch)
+sha256sums=('b5b24ca04bd73c642db0a4b4df81d262381d758f01b51108257d48b391b8718c'
+            'cc49d8c0932dc3f630073e87c8fffaddd811306dc32d74a8127fe0de7baccd4d'
+            '0170eeb8b649b69819f36e2519e8f8c960155a68b6231e94130c8bd85fef8f1a'
+            'e31ad02b4ba1d403483dfce5f72b454effe8688ac84784c891c06b5a62f3d0e3'
+            # '81a8f41d4ccabe6ef53ad204c34b017179d810e0c0ad4f0864eceb25606b5e10'
+            '30afe07fb5acf95a053219764723bb0a551f45f67ddc48f46b8ef39fac9948b7'
+            '34bf3b2fea92e59b027550b52a0de7fbf1994c30438d0c074d93872200f44d36')
+
+prepare() {
+  cd "$srcdir/$_pkgname-$pkgver"
+  # https://gitlab.xfce.org/xfce/xfwm4/-/issues/603
+  patch -Np1 -i ../client-Handle-removal-of-GTK_FRAME_EXTENTS.patch
+  patch -Np1 -i ../xfwm4-4.16-keep_panel_hidden_on_fullscreen.patch
+  patch -Np1 -i ../xfwm4-4.16.1-no_raise_on_scroll.patch
+  # patch -Np1 -i ../xfwm4-4.16.1-window_cycle_keep_open.patch
+  patch -Np1 -i ../xfwm4-4.16.1-close_window_from_tabwin.patch
+  patch -Np1 -i ../xfwm4-4.16-fix_crash_when_clicking_outside_window_list.patch
+}
 
 build() {
-  cd "$srcdir/$_pkgname"
-  ./autogen.sh \
+  cd "$srcdir/$_pkgname-$pkgver"
+
+  ./configure \
     --prefix=/usr \
     --sysconfdir=/etc \
     --libexecdir=/usr/lib \
@@ -32,6 +56,6 @@ build() {
 }
 
 package() {
-  cd "$srcdir/$_pkgname"
+  cd "$srcdir/$_pkgname-$pkgver"
   make DESTDIR="$pkgdir" install
 }
