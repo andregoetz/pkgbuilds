@@ -7,7 +7,7 @@ url="https://github.com/andregoetz/eos-sddm-startscreen"
 license=('GPL3')
 makedepends=()
 depends=('qt5-multimedia>=5.12.1' 'qt5-quickcontrols>=5.12.1')
-source=(git://github.com/andregoetz/$pkgname)
+source=(git+https://github.com/andregoetz/$pkgname)
 sha256sums=('SKIP')
 
 build() {
